@@ -5,6 +5,8 @@ A deterministic value hashing algorithm for node.js.
 Pass any Javascript value and receive a deterministic hash (in hexadecimal) of the value. If an object is passed, only own enumerable string-keyed properties are used, the order of the keys does not matter as long as all of the values match.
 
 ```typescript
+import deterministicHash from 'deterministic-hash';
+
 const objA = { a: 'x', arr: [1,2,3,4], b: 'y' };
 const objB = { b: 'y', a: 'x', arr: [1,2,3,4] };
 
