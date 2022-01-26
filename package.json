@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zbauman3/deterministic-hash.git"
+    "url": "git+https://github.com/zbauman3/Deterministic-Hash.git"
   },
   "keywords": [
     "deterministic",
@@ -19,9 +19,9 @@
   "author": "Zane Bauman",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zbauman3/deterministic-hash/issues"
+    "url": "https://github.com/zbauman3/Deterministic-Hash/issues"
   },
-  "homepage": "https://github.com/zbauman3/deterministic-hash#readme",
+  "homepage": "https://github.com/zbauman3/Deterministic-Hash#readme",
   "devDependencies": {
     "@types/jest": "^27.4.0",
     "@types/node": "^17.0.12",
