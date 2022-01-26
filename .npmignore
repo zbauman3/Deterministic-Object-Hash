@@ -1,0 +1,7 @@
+src/
+dist/__test__/
+node_modules/
+*.code-workspace
+tsconfig.json
+jest.config.js
+CHANGELOG.md
