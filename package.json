@@ -1,6 +1,6 @@
 {
   "name": "deterministic-hash",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A deterministic value hashing algorithm for node.js.",
   "main": "dist/index.js",
   "scripts": {
