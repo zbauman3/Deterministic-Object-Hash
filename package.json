@@ -1,7 +1,7 @@
 {
   "name": "deterministic-hash",
   "version": "1.0.0",
-  "description": "A deterministic value hashing algorithm for node",
+  "description": "A deterministic value hashing algorithm for node.js.",
   "main": "dist/index.js",
   "scripts": {
     "test": "npx jest",
