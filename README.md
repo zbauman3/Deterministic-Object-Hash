@@ -1,5 +1,5 @@
-# Deterministic-Hash
-A deterministic value hashing algorithm for node.js.
+# Deterministic-Object-Hash
+A deterministic object hashing algorithm for Node.js.
 
 ## The Problem
 Using `JSON.stringify` on two objects that are deeply equal does not lead to the same output string. Instead the keys are ordered in the same order that they were added. This leads to two objects that are deeply equal being hashed to different values.
@@ -37,7 +37,7 @@ createHash('sha1').update(string2).digest('hex');
 Pass any Javascript value and receive a deterministic hash of the value. If an object is passed, only own enumerable string-keyed properties are used.
 
 ```typescript
-import deterministicHash from 'deterministic-hash';
+import deterministicHash from 'deterministic-object-hash';
 
 const objA = { a: 'x', arr: [1,2,3,4], b: 'y' };
 const objB = { b: 'y', a: 'x', arr: [1,2,3,4] };

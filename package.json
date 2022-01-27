@@ -1,7 +1,7 @@
 {
-  "name": "deterministic-hash",
+  "name": "deterministic-object-hash",
   "version": "1.1.0",
-  "description": "A deterministic value hashing algorithm for node.js.",
+  "description": "A deterministic object hashing algorithm for Node.js.",
   "main": "dist/index.js",
   "scripts": {
     "test": "npx jest",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zbauman3/Deterministic-Hash.git"
+    "url": "git+https://github.com/zbauman3/Deterministic-Object-Hash.git"
   },
   "keywords": [
     "deterministic",
@@ -19,9 +19,9 @@
   "author": "Zane Bauman",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zbauman3/Deterministic-Hash/issues"
+    "url": "https://github.com/zbauman3/Deterministic-Object-Hash/issues"
   },
-  "homepage": "https://github.com/zbauman3/Deterministic-Hash#readme",
+  "homepage": "https://github.com/zbauman3/Deterministic-Object-Hash#readme",
   "devDependencies": {
     "@types/jest": "^27.4.0",
     "@types/lodash": "^4.14.178",
