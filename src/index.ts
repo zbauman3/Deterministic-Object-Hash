@@ -13,12 +13,12 @@ export default function deterministicHash(
 
 };
 
-function deterministicString(input: unknown){
+export function deterministicString(input: unknown){
 
 	if(typeof input === 'string'){
 
-		//no conversion
-		return input;
+		//wrap in quotes to distinguish from the primitive versions (e.g. "null"/null)
+		return `"${input}"`;
 
 	}else if(
 		typeof input === 'symbol' || 
