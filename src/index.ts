@@ -1,8 +1,7 @@
 import { createHash } from "crypto";
 
 /**
- * Creates a deterministic hash for all input types. Optionally pass a hash
- * algorithm.
+ * Creates a deterministic hash for all input types.
  */
 export default function deterministicHash(
 	input: unknown,
