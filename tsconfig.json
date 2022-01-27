@@ -26,7 +26,7 @@
 		"allowUnusedLabels": false,
 
 		"allowSyntheticDefaultImports": false,
-		"esModuleInterop": false,
+		"esModuleInterop": true,
 		"moduleResolution": "node",
 		"forceConsistentCasingInFileNames": true,
 		"noEmitOnError": true,
