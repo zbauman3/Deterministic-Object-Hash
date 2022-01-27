@@ -24,8 +24,10 @@
   "homepage": "https://github.com/zbauman3/Deterministic-Hash#readme",
   "devDependencies": {
     "@types/jest": "^27.4.0",
+    "@types/lodash": "^4.14.178",
     "@types/node": "^17.0.12",
     "jest": "^27.4.7",
+    "lodash": "^4.17.21",
     "typescript": "^4.5.5"
   }
 }

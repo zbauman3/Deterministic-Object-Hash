@@ -6,10 +6,11 @@ import { createHash } from "crypto";
  */
 export default function deterministicHash(
 	input: unknown,
-	algorithm: Parameters<typeof createHash>[0] = 'sha1'
+	algorithm: Parameters<typeof createHash>[0] = 'sha1',
+	output: Parameters<ReturnType<typeof createHash>['digest']>[0] = 'hex',
 ){
 
-	return createHash(algorithm).update(deterministicString(input)).digest('hex');
+	return createHash(algorithm).update(deterministicString(input)).digest(output);
 
 };
 
@@ -17,6 +18,7 @@ function deterministicString(input: unknown){
 
 	if(typeof input === 'string'){
 
+		//no conversion
 		return input;
 
 	}else if(
