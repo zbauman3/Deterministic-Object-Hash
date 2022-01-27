@@ -1,6 +1,6 @@
 {
   "name": "deterministic-object-hash",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A deterministic object hashing algorithm for Node.js.",
   "main": "dist/index.js",
   "scripts": {
