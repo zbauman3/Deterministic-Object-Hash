@@ -1,9 +1,11 @@
 {
 	"compilerOptions": {
 		"module": "CommonJs",
-		"target": "es2020",
+		"lib": ["es2020"],
+		"target": "es2018",
 		"outDir": "./dist",
 		"rootDir": "./src",
+		"declaration": true,
 
 		"allowJs": true,
 		"isolatedModules": true,
@@ -25,7 +27,7 @@
 		"allowUnreachableCode": false,
 		"allowUnusedLabels": false,
 
-		"allowSyntheticDefaultImports": false,
+		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"moduleResolution": "node",
 		"forceConsistentCasingInFileNames": true,
