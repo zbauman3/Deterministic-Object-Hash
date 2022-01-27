@@ -18,7 +18,7 @@ deterministicHash({
 	g: Symbol('Unique identity'),
 	h: new Error('AHHH')
 });
-// -> 4e70a34b3239c106b62f67be13d582693c0f0f01
+// -> 455b32a99a84efad551409b39bd91fc028a98343
 
 deterministicHash({
 	h: new Error('AHHH'),
@@ -28,7 +28,7 @@ deterministicHash({
 	f: ()=>{ Math.random(); },
 	c: [ objA, objB ]
 });
-// -> 4e70a34b3239c106b62f67be13d582693c0f0f01
+// -> 455b32a99a84efad551409b39bd91fc028a98343
 ```
 
 ## Settings

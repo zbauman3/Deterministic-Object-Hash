@@ -38,33 +38,6 @@ test('Similar objects are the same', ()=>{
 
 });
 
-test('Memoization is valid', ()=>{
-
-	const obj1 = {
-		a: 'b',
-		c: 'd',
-		e: 'f',
-	};
-
-	const obj2 = {
-		e: 'f',
-		a: 'b',
-		c: 'd',
-	};
-
-	const obj3 = {
-		c: 'd',
-		e: 'f',
-		a: 'b',
-	};
-
-	deterministicHash([obj1, obj2, obj3]);
-
-	//1 for each key, 1 for obj constructor, 1 for whole object, 1 for array
-	expect(createHashSpy).toHaveBeenCalledTimes(6);
-
-});
-
 test('All types work', ()=>{
 
 	expect(typeof deterministicHash(Symbol('test'))).toBe('string');

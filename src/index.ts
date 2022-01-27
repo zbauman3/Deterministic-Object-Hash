@@ -6,51 +6,58 @@ import { createHash } from "crypto";
  */
 export default function deterministicHash(
 	input: unknown,
-	algorithm: Parameters<typeof createHash>[0] = 'sha1',
-	memo: Record<string, string> = {}
+	algorithm: Parameters<typeof createHash>[0] = 'sha1'
 ){
-	
-	//to store the key of the memo
-	let key = '';
 
-	if(
+	return createHash(algorithm).update(deterministicString(input)).digest('hex');
+
+};
+
+function deterministicString(input: unknown){
+
+	if(typeof input === 'string'){
+
+		return input;
+
+	}else if(
 		typeof input === 'symbol' || 
 		typeof input === 'function'
 	){
 
 		//use `toString` for an accurate representation of these
-		key = input.toString();
+		return input.toString();
 
 	}else if(
 		typeof input === 'bigint' ||
 		typeof input === 'boolean' ||
 		typeof input === 'number' ||
-		typeof input === 'string' ||
 		input === undefined ||
 		input === null ||
 		typeof input !== 'object'
 	){
 
 		//cast to string for any of these
-		key = `${input}`;
+		return `${input}`;
 
 	}else if(Array.isArray(input)){
 
-		key += '[';
+		let ret = '[';
 
 		//add all of the key value pairs
 		for(let i = 0; i < input.length; i++){
 
-			key += `(${i}:${deterministicHash(input[i], algorithm, memo)}),`;
+			ret += `(${i}:${deterministicString(input[i])}),`;
 
 		}
 
-		key += ']';
+		ret += ']';
+
+		return ret;
 
 	}else{
 
 		//add the constructor as a key
-		key += `(${deterministicHash(input.constructor, algorithm, memo)}:[`;
+		let ret: string = `(${deterministicString(input.constructor)}:[`;
 
 		//get key/value pairs
 		const entries = Object.entries(input);
@@ -61,22 +68,14 @@ export default function deterministicHash(
 		//add all of the key/value pairs
 		for(const [k, v] of entries){
 
-			key += `(${k}:${deterministicHash(v, algorithm, memo)}),`;
+			ret += `(${k}:${deterministicString(v)}),`;
 
 		}
 
-		key += '])';
+		ret += '])';
+
+		return ret;
 
 	}
 
-	//add to the memo if not found
-	if(!(key in memo)){
-
-		memo[key] = createHash(algorithm).update(key).digest('hex');
-
-	}
-
-	//return memoized value
-	return memo[key];
-
-};
+}
