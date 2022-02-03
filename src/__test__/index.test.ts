@@ -1,4 +1,4 @@
-import deterministicHash, { isPlainObject } from "../index";
+import deterministicHash, {deterministicString} from "../index";
 import { isEqual as _isEqual } from "lodash";
 import crypto from "crypto";
 
@@ -6,41 +6,6 @@ const createHashSpy = jest.spyOn(crypto, 'createHash');
 
 beforeEach(()=>{
 	createHashSpy.mockClear();
-});
-
-test('isPlainObject', ()=>{
-
-	expect(isPlainObject( {} )).toBe(true);
-	expect(isPlainObject( { constructor: 'test' } )).toBe(true);
-	expect(isPlainObject( Object(null) )).toBe(true);
-	expect(isPlainObject( Object({}) )).toBe(true);
-	expect(isPlainObject( Object({ constructor: 'test' }) )).toBe(true);
-	expect(isPlainObject( Object.create(null) )).toBe(true);
-	expect(isPlainObject( Object.create(Object.prototype) )).toBe(true);
-	expect(isPlainObject( { valueOf: 'test' } )).toBe(true);
-	
-	class Bar{};
-
-	expect(isPlainObject( Object.create({ constructor: 'test' }) )).toBe(false);
-	expect(isPlainObject( Object.create({ [Symbol.toStringTag]: 'test' }) )).toBe(false);
-	expect(isPlainObject( 1 )).toBe(false);
-	expect(isPlainObject( BigInt(1) )).toBe(false);
-	expect(isPlainObject( '1' )).toBe(false);
-	expect(isPlainObject( undefined )).toBe(false);
-	expect(isPlainObject( false )).toBe(false);
-	expect(isPlainObject( null )).toBe(false);
-	expect(isPlainObject( function(){} )).toBe(false);
-	expect(isPlainObject( ()=>{} )).toBe(false);
-	expect(isPlainObject( [1,2,3] )).toBe(false);
-	//@ts-ignore
-	expect(isPlainObject( (function() {function Foo(){};return new Foo()}()) )).toBe(false);
-	expect(isPlainObject( Bar )).toBe(false);
-	expect(isPlainObject( new Bar() )).toBe(false);
-	expect(isPlainObject( Math )).toBe(false);
-	expect(isPlainObject( new Error('blahh') )).toBe(false);
-	expect(isPlainObject( Symbol )).toBe(false);
-	expect(isPlainObject( Symbol('test') )).toBe(false);
-
 });
 
 describe('deterministicHash', ()=>{
@@ -138,47 +103,351 @@ describe('deterministicString', ()=>{
 	test('Primitives don\'t match their string versions.', ()=>{
 	
 		expect(
-			deterministicHash(null)
+			deterministicString(null)
 		).not.toBe(
-			deterministicHash('null')
+			deterministicString('null')
 		);
 	
 		expect(
-			deterministicHash(undefined)
+			deterministicString(undefined)
 		).not.toBe(
-			deterministicHash('undefined')
+			deterministicString('undefined')
 		);
 	
 		expect(
-			deterministicHash(true)
+			deterministicString(true)
 		).not.toBe(
-			deterministicHash('true')
+			deterministicString('true')
 		);
 	
 		expect(
-			deterministicHash(false)
+			deterministicString(false)
 		).not.toBe(
-			deterministicHash('false')
+			deterministicString('false')
 		);
 	
 		expect(
-			deterministicHash(Number('will be "NaN"'))
+			deterministicString(Number('will be "NaN"'))
 		).not.toBe(
-			deterministicHash('NaN')
+			deterministicString('NaN')
 		);
 	
 		expect(
-			deterministicHash(123)
+			deterministicString(123)
 		).not.toBe(
-			deterministicHash('123')
+			deterministicString('123')
 		);
 	
 		expect(
-			deterministicHash(BigInt(123))
+			deterministicString(BigInt(123))
 		).not.toBe(
-			deterministicHash('123n')
+			deterministicString('123n')
 		);
 	
 	});
+
+	test('undefined', ()=>{
+
+		expect(
+			deterministicString(undefined)
+		).toBe('undefined');
+
+	});
+
+	test('null', ()=>{
+
+		expect(
+			deterministicString(null)
+		).toBe('null');
+
+	});
+
+	test('globalThis', ()=>{
+
+		expect(
+			deterministicString(globalThis)
+		).toBe('[object Object]');
+
+	});
+
+	test('Function', ()=>{
+
+		expect(
+			deterministicString( function(){ 'test'; } ).replace(/[\s\t\r\n]/g, '')//remove white space to test against
+		).toBe("function(){'test';}");
+
+		expect(
+			deterministicString( ()=>{ 'test'; } ).replace(/[\s\t\r\n]/g, '')//remove white space to test against
+		).toBe("()=>{'test';}");
+
+	});
+
+	test('Boolean', ()=>{
+
+		expect(
+			deterministicString(true)
+		).toBe('true');
+
+		expect(
+			deterministicString(false)
+		).toBe('false');
+
+	});
+
+	test('Symbol', ()=>{
+
+		expect(
+			deterministicString(Symbol('test'))
+		).toBe("Symbol(test)");
+
+	});
+
+	test('Number', ()=>{
+
+		expect(
+			deterministicString(1)
+		).toBe("1");
+
+		expect(
+			deterministicString(-0)
+		).toBe("0");
+
+	});
+
+	test('Infinity', ()=>{
+
+		expect(
+			deterministicString(Infinity)
+		).toBe('Infinity');
+
+		expect(
+			deterministicString(-Infinity)
+		).toBe('-Infinity');
+
+	});
+
+	test('NaN', ()=>{
+
+		expect(
+			deterministicString(NaN)
+		).toBe('NaN');
+
+		expect(
+			deterministicString(-NaN)
+		).toBe('NaN');
+
+	});
+
+	test('BigInt', ()=>{
+
+		expect(
+			deterministicString(BigInt(1))
+		).toBe('1n');
+
+	});
+
+	test('Date', ()=>{
+
+		expect(
+			deterministicString(new Date(0))
+		).toBe('(Date:0)');
+
+		expect(
+			deterministicString(new Date(-1000))
+		).toBe('(Date:-1000)');
+
+	});
+
+	test('String', ()=>{
+
+		expect(
+			deterministicString('test')
+		).toBe('"test"');
+
+		expect(
+			deterministicString('te"st')
+		).toBe('"te\\"st"');
+
+	});
+
+	test('RegExp', ()=>{
+
+		expect(
+			deterministicString(/this|is|a|test/gim)
+		).toBe('(RegExp:/this|is|a|test/gim)');
+
+		expect(
+			deterministicString(new RegExp('this|is|a|test', 'gim'))
+		).toBe('(RegExp:/this|is|a|test/gim)');
+
+	});
+
+	test('Array', ()=>{
+
+		expect(
+			deterministicString([ 'this', 'is', 'a', 'test' ])
+		).toBe(`(Array:[(0:"this"),(1:"is"),(2:"a"),(3:"test"),])`);
+
+		expect(
+			deterministicString(new Array(...[ 'this', 'is', 'a', 'test' ]))
+		).toBe(`(Array:[(0:"this"),(1:"is"),(2:"a"),(3:"test"),])`);
+
+		expect(
+			deterministicString(Array.from([ 'this', 'is', 'a', 'test' ]))
+		).toBe(`(Array:[(0:"this"),(1:"is"),(2:"a"),(3:"test"),])`);
+
+	});
+
+	test('Int8Array', ()=>{
+
+		const typedArr = new Int8Array(4);
+		typedArr[0] = 1;
+		typedArr[1] = 1;
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(Int8Array:[(0:1),(1:1),(2:0),(3:0),])`);
+
+	});
+
+	test('Uint8Array', ()=>{
+
+		const typedArr = new Uint8Array(4);
+		typedArr[0] = 1;
+		typedArr[1] = 1;
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(Uint8Array:[(0:1),(1:1),(2:0),(3:0),])`);
+
+	});
+
+	test('Uint8ClampedArray', ()=>{
+
+		const typedArr = new Uint8ClampedArray(4);
+		typedArr[0] = 1;
+		typedArr[1] = 1;
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(Uint8ClampedArray:[(0:1),(1:1),(2:0),(3:0),])`);
+
+	});
+
+	test('Int16Array', ()=>{
+
+		const typedArr = new Int16Array(4);
+		typedArr[0] = 1;
+		typedArr[1] = 1;
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(Int16Array:[(0:1),(1:1),(2:0),(3:0),])`);
+
+	});
+
+	test('Uint16Array', ()=>{
+
+		const typedArr = new Uint16Array(4);
+		typedArr[0] = 1;
+		typedArr[1] = 1;
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(Uint16Array:[(0:1),(1:1),(2:0),(3:0),])`);
+
+	});
+
+	test('Int32Array', ()=>{
+
+		const typedArr = new Int32Array(4);
+		typedArr[0] = 1;
+		typedArr[1] = 1;
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(Int32Array:[(0:1),(1:1),(2:0),(3:0),])`);
+
+	});
+
+	test('Uint32Array', ()=>{
+
+		const typedArr = new Uint32Array(4);
+		typedArr[0] = 1;
+		typedArr[1] = 1;
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(Uint32Array:[(0:1),(1:1),(2:0),(3:0),])`);
+
+	});
+
+	test('Float32Array', ()=>{
+
+		const typedArr = new Float32Array(4);
+		typedArr[0] = 1;
+		typedArr[1] = 1;
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(Float32Array:[(0:1),(1:1),(2:0),(3:0),])`);
+
+	});
+
+	test('Float64Array', ()=>{
+
+		const typedArr = new Float64Array(4);
+		typedArr[0] = 1;
+		typedArr[1] = 1;
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(Float64Array:[(0:1),(1:1),(2:0),(3:0),])`);
+
+	});
+
+	test('BigInt64Array', ()=>{
+
+		const typedArr = new BigInt64Array(4);
+		typedArr[0] = BigInt(1);
+		typedArr[1] = BigInt(1);
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(BigInt64Array:[(0:1n),(1:1n),(2:0n),(3:0n),])`);
+
+	});
+
+	test('BigUint64Array', ()=>{
+
+		const typedArr = new BigUint64Array(4);
+		typedArr[0] = BigInt(1);
+		typedArr[1] = BigInt(1);
+
+		expect(
+			deterministicString(typedArr)
+		).toBe(`(BigUint64Array:[(0:1n),(1:1n),(2:0n),(3:0n),])`);
+
+	});
+
+	// //---------to test
+	// Object
+	// Map
+	// Set
+	// WeakMap
+	// WeakSet
+	// ArrayBuffer
+	// SharedArrayBuffer
+
+	//Symbol keys in a plain object/map/class
+	//Class inheritance
+
+
+	// //-----------not handling
+	// Atomics
+	// DataView
+	// Promise
+	// Reflect
+	// Proxy
 
 });

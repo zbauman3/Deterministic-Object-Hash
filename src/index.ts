@@ -1,4 +1,5 @@
 import { createHash } from "crypto";
+import isPlainObject from "./isPlainObject";
 
 /**
  * Creates a deterministic hash for all input types.
@@ -17,38 +18,32 @@ export function deterministicString(input: unknown): string{
 
 	if(typeof input === 'string'){
 
-		//wrap in quotes to distinguish from the primitive versions (e.g. "null"/null)
-		return `"${input}"`;
+		//wrap in quotes (and escape queotes) to differentiate from stringified primitives
+		return JSON.stringify(input);
 
-	}else if(
-		typeof input === 'symbol' || 
-		typeof input === 'function'
-	){
+	}else if(typeof input === 'symbol' || typeof input === 'function'){
 
 		//use `toString` for an accurate representation of these
 		return input.toString();
 
-	}else if(
-		input === undefined ||
-		input === null ||
-		typeof input === 'bigint' ||
-		typeof input === 'boolean' ||
-		typeof input === 'number' ||
-		typeof input !== 'object'
-	){
+	}else if(typeof input === 'bigint'){
+
+		//bigint turns into a string int, so I need to differentiate it from a normal int
+		return `${input}n`;
+
+	}else if(input === globalThis || input === undefined || input === null || typeof input === 'boolean' || typeof input === 'number' || typeof input !== 'object'){
 
 		//cast to string for any of these
 		return `${input}`;
 
-	}else if(
-		input instanceof Date ||
-		input instanceof RegExp || 
-		input instanceof Error ||
-		input instanceof WeakMap || //non-iterable
-		input instanceof WeakSet    //non-iterable
-	){
+	}else if(input instanceof Date){
 
-		//add the constructor as a key, use simple `toString`
+		//using timestamp for dates
+		return `(${input.constructor.name}:${input.getTime()})`;
+
+	}else if(input instanceof RegExp || input instanceof Error || input instanceof WeakMap || input instanceof WeakSet){
+
+		//add the constructor as a key, use simple `toString`. `WeakMap` and `WeakSet` are non-iterable, so this is the best I can do
 		return `(${input.constructor.name}:${input.toString()})`;
 
 	}else if(input instanceof Set){
@@ -59,11 +54,11 @@ export function deterministicString(input: unknown): string{
 		//add all unique values
 		for(const val of input.values()){
 
-			ret += `(${deterministicString(val)}),`;
+			ret += `${deterministicString(val)},`;
 
 		}
 
-		ret += ']';
+		ret += '])';
 
 		return ret;
 
@@ -85,20 +80,21 @@ export function deterministicString(input: unknown): string{
 		//add the constructor as a key
 		let ret = `(${input.constructor.name}:[`;
 
+		//add all key/value pairs
 		for(const [k, v] of input.entries()){
 
 			ret += `(${k}:${deterministicString(v)}),`;
 
 		}
 
-		ret += ']';
+		ret += '])';
 
 		return ret;
 
-	}else if(
-		input instanceof ArrayBuffer ||
-		input instanceof SharedArrayBuffer
-	){
+	}else if(input instanceof ArrayBuffer || input instanceof SharedArrayBuffer){
+
+		//each typed array must be in multiples of their byte size.
+		//see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray#typedarray_objects
 
 		if(input.byteLength % 8 === 0){
 
@@ -114,11 +110,13 @@ export function deterministicString(input: unknown): string{
 
 		}else{
 
+			/** @todo - Change this to a system that breaks it down into parts. E.g. byteLength of 17 = BigUint64Array*2 and Uint8Array */
+
 			let ret = '(';
 
 			for(let i = 0; i < input.byteLength; i++){
 
-				ret += deterministicString(new Uint8Array(input.slice(i, i+1)));
+				ret += `${deterministicString(new Uint8Array(input.slice(i, i+1)))},`;
 
 			}
 
@@ -128,10 +126,7 @@ export function deterministicString(input: unknown): string{
 
 		}
 
-	}else if(
-		input instanceof Map ||
-		isPlainObject(input)
-	){
+	}else if(input instanceof Map || isPlainObject(input)){
 
 		//add the constructor as a key
 		let ret: string = `(${input.constructor.name}:[`;
@@ -153,68 +148,38 @@ export function deterministicString(input: unknown): string{
 
 		return ret;
 
-	}else{
+	}
 
-		//add the constructor as a key
-		let ret: string = `(${input.constructor.name}:[`;
+	//a class/non-plain object
 
-		const allEntries: [string, unknown][] = [];
+	//add the constructor as a key
+	let ret: string = `(${input.constructor.name}:[`;
 
-		for(const k in input){
+	const allEntries: [string, any][] = [];
 
-			allEntries.push([
-				`${k}`,
-				//have to ignore because `noImplicitAny` is `true` but this is implicitly `any`
-				//@ts-ignore
-				input[k]
-			]);
+	for(const k in input){
 
-		}
-
-		//sort alphabetically by keys
-		allEntries.sort(([a],[b])=>a.localeCompare(b));
-
-		//add all of the key/value pairs
-		for(const [k, v] of allEntries){
-
-			ret += `(${k}:${deterministicString(v)}),`;
-
-		}
-
-		ret += '])';
-
-		return ret;
+		allEntries.push([
+			`${k}`,
+			//have to ignore because `noImplicitAny` is `true` but this is implicitly `any`
+			//@ts-ignore
+			input[k]
+		]);
 
 	}
+
+	//sort alphabetically by keys
+	allEntries.sort(([a],[b])=>a.localeCompare(b));
+
+	//add all of the key/value pairs
+	for(const [k, v] of allEntries){
+
+		ret += `(${k}:${deterministicString(v)}),`;
+
+	}
+
+	ret += '])';
+
+	return ret;
 
 }
-
-const objConstructorString = Function.prototype.toString.call(Object);
-export function isPlainObject(value: unknown){
-
-	//base object
-	if(
-		typeof value !== 'object' ||
-		value === null ||
-		Object.prototype.toString.call(value) !== '[object Object]'
-	){
-		return false;
-	}
-
-	//get the prototype
-	const proto = Object.getPrototypeOf(value);
-
-	//no prototype === all good
-	if(proto === null){
-		return true;
-	}
-
-	// validate that the constructor is `Object`
-	const cTor = (Object.prototype.hasOwnProperty.call(proto, 'constructor') && proto.constructor);
-	return (
-		typeof cTor === 'function' &&
-		cTor instanceof cTor &&
-		Function.prototype.toString.call(cTor) === objConstructorString
-	);
-
-};
