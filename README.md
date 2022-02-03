@@ -34,7 +34,7 @@ createHash('sha1').update(string2).digest('hex');
 
 
 ## Usage
-Pass any Javascript value and receive a deterministic hash of the value. If an object is passed, only own enumerable string-keyed properties are used.
+Pass a value and receive a deterministic hash of the value.
 
 ```typescript
 import deterministicHash from 'deterministic-object-hash';
@@ -78,9 +78,7 @@ deterministicHash('value', 'sha512', 'base64');
 // -> 514CuHw/31qqUH2waqaqhKSMvLYH/YdZeRI4QqDBwhKbUk0/3mxhv4NUubXIl5Dm2k0VpU6ZZkmunEb10RngfQ==
 ```
 
-## Supported Types/Objects
-
-The following are supported, with a few caveats below.
+## Supported Values
 |                     |                   |
 | ------------------- | ----------------- |
 | String              | Number            |
@@ -100,9 +98,7 @@ The following are supported, with a few caveats below.
 | Uint8ClampedArray   | globalThis        |
 | ArrayBuffer         | SharedArrayBuffer |
 
-## Unsupported Types/Objects
-
-The following are unsupported.
+## Unsupported Values
 |          |          |
 | -------- | -------- |
 | WeakMap  | WeakSet  |
