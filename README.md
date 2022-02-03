@@ -50,7 +50,7 @@ deterministicHash({
 	g: Symbol('Unique identity'),
 	h: new Error('AHHH')
 });
-// -> 455b32a99a84efad551409b39bd91fc028a98343
+// -> 4c57bcb76498dca7b98ef9747c8f1e7f10c30388
 
 deterministicHash({
 	h: new Error('AHHH'),
@@ -60,7 +60,7 @@ deterministicHash({
 	f: ()=>{ Math.random(); },
 	c: [ objA, objB ]
 });
-// -> 455b32a99a84efad551409b39bd91fc028a98343
+// -> 4c57bcb76498dca7b98ef9747c8f1e7f10c30388
 ```
 
 ## Settings
@@ -71,12 +71,46 @@ A digest format can be passed as the third argument. This takes any value that i
 
 ```typescript
 deterministicHash('value', 'sha1');
-// -> f32b67c7e26342af42efabc674d441dca0a281c5
+// -> efede6000ad4e1ff258a38866c71aa351d3c01f6
 deterministicHash('value', 'sha256', 'hex');
-// -> cd42404d52ad55ccfa9aca4adc828aa5800ad9d385a0671fbcbf724118320619
+// -> a0b7821a11db531982044ca5ca2e788e2d749d6b696cd3aa4172342f584f2ee1
 deterministicHash('value', 'sha512', 'base64');
-// -> 7CyD7ey2AwTRVOvbhb369hqSvRQuccT3sloVuctfPArjAc+zVpzyQORHADE4U0i8KW2NmdCeBrJvCVkal1Jylg==
+// -> 514CuHw/31qqUH2waqaqhKSMvLYH/YdZeRI4QqDBwhKbUk0/3mxhv4NUubXIl5Dm2k0VpU6ZZkmunEb10RngfQ==
 ```
+
+## Supported Types/Objects
+
+The following are supported, with a few caveats below.
+|                     |                   |
+| ------------------- | ----------------- |
+| String              | Number            |
+| Boolean             | Function          |
+| Plain Objects       | Symbol            |
+| undefined           | null              |
+| Infinity            | NaN               |
+| BigInt              | Array             |
+| Classes/Inheritance | Errors            |
+| Date                | RegExp            |
+| Map                 | Set               |
+| Int8Array           | Uint8Array        |
+| Int16Array          | Uint16Array       |
+| Int32Array          | Uint32Array       |
+| Float32Array        | Float64Array      |
+| BigInt64Array       | BigUint64Array    |
+| Uint8ClampedArray   | globalThis        |
+| ArrayBuffer         | SharedArrayBuffer |
+
+## Unsupported Types/Objects
+
+The following are unsupported.
+|          |          |
+| -------- | -------- |
+| WeakMap  | WeakSet  |
+| Atomics  | DataView |
+| Promises | Reflect  |
+| Proxy    |          |
+
+Due to their nature, [WeakSet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet#description) and [WeakMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap#why_weakmap) are not enumerable. As a result there is no way to know what is in a WeakSet/WeakMap unless we are told.
 
 ## Support
 Currently this has only been tested on Node.js `16.3.x`. More tests are to come and this section will be updated as I test them.

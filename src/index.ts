@@ -1,9 +1,7 @@
 import { createHash } from "crypto";
 import isPlainObject from "./isPlainObject";
 
-/**
- * Creates a deterministic hash for all input types.
- */
+/** Creates a deterministic hash for all inputs. */
 export default function deterministicHash(
 	input: unknown,
 	algorithm: Parameters<typeof createHash>[0] = 'sha1',
@@ -43,7 +41,7 @@ export function deterministicString(input: unknown): string{
 
 	}else if(input instanceof RegExp || input instanceof Error || input instanceof WeakMap || input instanceof WeakSet){
 
-		//add the constructor as a key, use simple `toString`. `WeakMap` and `WeakSet` are non-iterable, so this is the best I can do
+		//use simple `toString`. `WeakMap` and `WeakSet` are non-iterable, so this is the best I can do
 		return `(${input.constructor.name}:${input.toString()})`;
 
 	}else if(input instanceof Set){
@@ -128,19 +126,53 @@ export function deterministicString(input: unknown): string{
 
 	}else if(input instanceof Map || isPlainObject(input)){
 
+		//all key/values will be put here for sorting by key
+		const sortable: [string, string][] = [];
+
+		//get key/value pairs
+		const entries = (input instanceof Map
+			? input.entries()
+			: Object.entries(input)
+		);
+
+		//add all key value pairs
+		for(const [k, v] of entries){
+
+			sortable.push([deterministicString(k), deterministicString(v)]);
+
+		}
+
+		//if not a map, get Symbol keys and add them
+		if(!(input instanceof Map)){
+
+			const symbolKeys = Object.getOwnPropertySymbols(input);
+
+			//convert each symbol key to a key/value pair
+			for(let i = 0; i < symbolKeys.length; i++){
+
+				sortable.push([
+					deterministicString(symbolKeys[i]!),
+					deterministicString(
+						//have to ignore because `noImplicitAny` is `true` but this is implicitly `any`
+						//@ts-ignore
+						input[symbolKeys[i]!]
+					)
+				]);
+
+			}
+
+		}
+
+		//sort alphabetically by keys
+		sortable.sort(([a],[b])=>a.localeCompare(b));
+
 		//add the constructor as a key
 		let ret: string = `(${input.constructor.name}:[`;
 
-		//get key/value pairs
-		const entries = Object.entries(input);
-
-		//sort alphabetically by keys
-		entries.sort(([a],[b])=>a.localeCompare(b));
-
 		//add all of the key/value pairs
-		for(const [k, v] of entries){
+		for(const [k, v] of sortable){
 
-			ret += `(${k}:${deterministicString(v)}),`;
+			ret += `(${k}:${v}),`;
 
 		}
 
@@ -152,18 +184,34 @@ export function deterministicString(input: unknown): string{
 
 	//a class/non-plain object
 
-	//add the constructor as a key
-	let ret: string = `(${input.constructor.name}:[`;
-
-	const allEntries: [string, any][] = [];
+	const allEntries: [string, string][] = [];
 
 	for(const k in input){
 
 		allEntries.push([
-			`${k}`,
-			//have to ignore because `noImplicitAny` is `true` but this is implicitly `any`
-			//@ts-ignore
-			input[k]
+			deterministicString(k),
+			deterministicString(
+				//have to ignore because `noImplicitAny` is `true` but this is implicitly `any`
+				//@ts-ignore
+				input[k]
+			)
+		]);
+
+	}
+
+	//get all own property symbols
+	const symbolKeys = Object.getOwnPropertySymbols(input);
+
+	//convert each symbol key to a key/value pair
+	for(let i = 0; i < symbolKeys.length; i++){
+
+		allEntries.push([
+			deterministicString(symbolKeys[i]!),
+			deterministicString(
+				//have to ignore because `noImplicitAny` is `true` but this is implicitly `any`
+				//@ts-ignore
+				input[symbolKeys[i]!]
+			)
 		]);
 
 	}
@@ -171,10 +219,13 @@ export function deterministicString(input: unknown): string{
 	//sort alphabetically by keys
 	allEntries.sort(([a],[b])=>a.localeCompare(b));
 
+	//add the constructor as a key
+	let ret: string = `(${input.constructor.name}:[`;
+
 	//add all of the key/value pairs
 	for(const [k, v] of allEntries){
 
-		ret += `(${k}:${deterministicString(v)}),`;
+		ret += `(${k}:${v}),`;
 
 	}
 

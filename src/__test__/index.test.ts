@@ -430,24 +430,208 @@ describe('deterministicString', ()=>{
 
 	});
 
-	// //---------to test
-	// Object
-	// Map
-	// Set
-	// WeakMap
-	// WeakSet
-	// ArrayBuffer
-	// SharedArrayBuffer
+	test('ArrayBuffer', ()=>{
 
-	//Symbol keys in a plain object/map/class
-	//Class inheritance
+		expect(
+			deterministicString( new ArrayBuffer(8) )
+		).toBe(
+			deterministicString( new BigUint64Array(1) )
+		);
 
+		expect(
+			deterministicString( new ArrayBuffer(4) )
+		).toBe(
+			deterministicString( new Uint32Array(1) )
+		);
 
-	// //-----------not handling
-	// Atomics
-	// DataView
-	// Promise
-	// Reflect
-	// Proxy
+		expect(
+			deterministicString( new ArrayBuffer(2) )
+		).toBe(
+			deterministicString( new Uint16Array(1) )
+		);
+
+		expect(
+			deterministicString( new ArrayBuffer(1) )
+		).toBe(
+			`(${deterministicString( new Uint8Array(1) )},)`
+		);
+
+		expect(
+			deterministicString( new ArrayBuffer(3) )
+		).toBe(
+			`(${deterministicString( new Uint8Array(1) )},${deterministicString( new Uint8Array(1) )},${deterministicString( new Uint8Array(1) )},)`
+		);
+
+	});
+
+	test('SharedArrayBuffer', ()=>{
+
+		expect(
+			deterministicString( new SharedArrayBuffer(8) )
+		).toBe(
+			deterministicString( new BigUint64Array(1) )
+		);
+
+		expect(
+			deterministicString( new SharedArrayBuffer(4) )
+		).toBe(
+			deterministicString( new Uint32Array(1) )
+		);
+
+		expect(
+			deterministicString( new SharedArrayBuffer(2) )
+		).toBe(
+			deterministicString( new Uint16Array(1) )
+		);
+
+		expect(
+			deterministicString( new SharedArrayBuffer(1) )
+		).toBe(
+			`(${deterministicString( new Uint8Array(1) )},)`
+		);
+
+		expect(
+			deterministicString( new SharedArrayBuffer(3) )
+		).toBe(
+			`(${deterministicString( new Uint8Array(1) )},${deterministicString( new Uint8Array(1) )},${deterministicString( new Uint8Array(1) )},)`
+		);
+
+	});
+
+	test('WeakMap', ()=>{
+
+		const wm = new WeakMap();
+
+		wm.set({}, 'test');
+
+		expect(
+			deterministicString( wm )
+		).toBe('(WeakMap:[object WeakMap])');
+
+	});
+
+	test('WeakSet', ()=>{
+
+		const ws = new WeakSet();
+
+		ws.add({});
+
+		expect(
+			deterministicString( ws )
+		).toBe('(WeakSet:[object WeakSet])');
+
+	});
+
+	test('Set', ()=>{
+
+		const s = new Set();
+
+		s.add('this is');
+		s.add('a test');
+
+		expect(
+			deterministicString( s )
+		).toBe('(Set:["this is","a test",])');
+
+	});
+
+	test('Map', ()=>{
+
+		const m = new Map();
+
+		m.set('a', 1);
+		m.set('b', 2);
+		m.set('c', 3);
+
+		expect(
+			deterministicString( m )
+		).toBe('(Map:[("a":1),("b":2),("c":3),])');
+
+	});
+
+	test('Map - Symbol keys', ()=>{
+
+		const m = new Map();
+
+		m.set(Symbol('a'), 1);
+		m.set(Symbol('b'), 2);
+		m.set(deterministicString(Symbol('c')), 3);
+
+		expect(
+			deterministicString( m )
+		).toBe('(Map:[("Symbol(c)":3),(Symbol(a):1),(Symbol(b):2),])');
+
+	});
+
+	test('Map - Other keys', ()=>{
+
+		const m = new Map();
+
+		m.set(false, 1);
+		m.set({ a: 1, b: 2, c: 3 }, 2);
+		m.set(undefined, 3);
+
+		expect(
+			deterministicString( m )
+		).toBe('(Map:[((Object:[("a":1),("b":2),("c":3),]):2),(false:1),(undefined:3),])');
+
+	});
+
+	test('Object - plain', ()=>{
+
+		expect(
+			deterministicString({ c: 3, a: 1, b: 2 })
+		).toBe('(Object:[("a":1),("b":2),("c":3),])');
+
+	});
+
+	test('Object - Symbol keys', ()=>{
+
+		expect(
+			deterministicString({ [Symbol('a')]: 1, [Symbol('b')]: 2, [deterministicString(Symbol('c'))]: 3 })
+		).toBe('(Object:[("Symbol(c)":3),(Symbol(a):1),(Symbol(b):2),])');
+
+	});
+
+	test('Classes & Inheritance', ()=>{
+
+		const Test1Symbol = Symbol('Test1Symbol');
+		class Test1{
+
+			public Test1Key: string;
+			public [Test1Symbol]: string;
+
+			constructor(){
+				this.Test1Key = 'Test1Value';
+				this[Test1Symbol] = 'Test1SymbolValue';
+			}
+			
+		}
+
+		const Test2Symbol = Symbol('Test2Symbol');
+		class Test2 extends Test1{
+
+			public Test2Key: string;
+			public [Test2Symbol]: string;
+
+			constructor(){
+				super();
+				this.Test2Key = 'Test2Value';
+				this[Test2Symbol] = 'Test2SymbolValue';
+			}
+
+			testFn(){'test';}
+			
+		}
+
+		expect(
+			deterministicString(new Test1())
+		).toBe('(Test1:[("Test1Key":"Test1Value"),(Symbol(Test1Symbol):"Test1SymbolValue"),])');
+
+		expect(
+			deterministicString(new Test2())
+		).toBe('(Test2:[("Test1Key":"Test1Value"),("Test2Key":"Test2Value"),(Symbol(Test1Symbol):"Test1SymbolValue"),(Symbol(Test2Symbol):"Test2SymbolValue"),])');
+
+	});
 
 });
