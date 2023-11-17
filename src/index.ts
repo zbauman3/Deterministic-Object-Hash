@@ -1,24 +1,18 @@
-import { webcrypto } from "crypto";
+import { BinaryToTextEncoding, webcrypto } from "crypto";
 import isPlainObject from "./isPlainObject";
-
-const base64 = (input: ArrayBuffer) =>
-  Buffer.from(hex(input)).toString("base64");
-const hex = (input: ArrayBuffer) =>
-  [...new Uint8Array(input)]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+import { encoders } from "./encoders";
 
 /** Creates a deterministic hash for all inputs. */
 export default async function deterministicHash(
 	input: unknown,
 	algorithm: Parameters<typeof webcrypto.subtle.digest>[0] = "SHA-1",
-	output: "hex" | "base64" = "hex"
+	output: BinaryToTextEncoding = "hex"
 ) {
 	const encoder = new TextEncoder();
 	const data = encoder.encode(deterministicString(input));
 	const hash = await webcrypto.subtle.digest(algorithm, data);
 
-	return output === "hex" ? hex(hash) : base64(hash);
+	return encoders[output](hash);
 }
 
 export function deterministicString(input: unknown): string{

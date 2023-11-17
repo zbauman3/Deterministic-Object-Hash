@@ -93,7 +93,19 @@ describe('deterministicHash', ()=>{
 		).toEqual(
 			crypto.createHash('sha512').update('"TEST_VALUE"').digest('base64')
 		);
-	
+
+    expect(
+			await deterministicHash('TEST_VALUE', 'SHA-512', 'base64url')
+		).toEqual(
+			crypto.createHash('sha512').update('"TEST_VALUE"').digest('base64url')
+		);
+
+    expect(
+			await deterministicHash('TEST_VALUE', 'SHA-512', 'binary')
+		).toEqual(
+			crypto.createHash('sha512').update('"TEST_VALUE"').digest('binary')
+		);
+
 	});
 
 });

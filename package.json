@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/zbauman3/Deterministic-Object-Hash#readme",
   "devDependencies": {
+    "@types/base-64": "^1.0.2",
     "@types/jest": "^27.4.0",
     "@types/lodash": "^4.14.178",
     "@types/node": "18.18.9",
@@ -33,5 +34,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "base-64": "^1.0.0"
   }
 }
