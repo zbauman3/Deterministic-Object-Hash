@@ -1,16 +1,19 @@
-import { createHash } from "crypto";
+import { BinaryToTextEncoding, webcrypto } from "crypto";
 import isPlainObject from "./isPlainObject";
+import { encoders } from "./encoders";
 
 /** Creates a deterministic hash for all inputs. */
-export default function deterministicHash(
+export default async function deterministicHash(
 	input: unknown,
-	algorithm: Parameters<typeof createHash>[0] = 'sha1',
-	output: Parameters<ReturnType<typeof createHash>['digest']>[0] = 'hex',
-){
+	algorithm: Parameters<typeof webcrypto.subtle.digest>[0] = "SHA-1",
+	output: BinaryToTextEncoding = "hex"
+) {
+	const encoder = new TextEncoder();
+	const data = encoder.encode(deterministicString(input));
+	const hash = await webcrypto.subtle.digest(algorithm, data);
 
-	return createHash(algorithm).update(deterministicString(input)).digest(output);
-
-};
+	return encoders[output](hash);
+}
 
 export function deterministicString(input: unknown): string{
 

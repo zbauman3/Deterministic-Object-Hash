@@ -65,16 +65,16 @@ deterministicHash({
 
 ## Settings
 
-A hash algorithm can be passed as the second argument. This takes any value that is valid for `crypto.createHash`. The default is `sha1`. \
+A hash algorithm can be passed as the second argument. This takes any value that is valid for `webcrypto.subtle.digest`. The default is `SHA-1`. \
 A digest format can be passed as the third argument. This takes any value that is valid for `Hash.digest`. The default is `hex`.
 
 
 ```typescript
-deterministicHash('value', 'sha1');
+await deterministicHash('value', 'SHA-1');
 // -> efede6000ad4e1ff258a38866c71aa351d3c01f6
-deterministicHash('value', 'sha256', 'hex');
+await deterministicHash('value', 'SHA-256', 'hex');
 // -> a0b7821a11db531982044ca5ca2e788e2d749d6b696cd3aa4172342f584f2ee1
-deterministicHash('value', 'sha512', 'base64');
+await deterministicHash('value', 'SHA-512', 'base64');
 // -> 514CuHw/31qqUH2waqaqhKSMvLYH/YdZeRI4QqDBwhKbUk0/3mxhv4NUubXIl5Dm2k0VpU6ZZkmunEb10RngfQ==
 ```
 
@@ -109,4 +109,4 @@ deterministicHash('value', 'sha512', 'base64');
 Due to their nature, [WeakSet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet#description) and [WeakMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap#why_weakmap) are not enumerable. As a result there is no way to know what is in a WeakSet/WeakMap unless we are told.
 
 ## Support
-Currently this has only been tested on Node.js `16.3.x`. More tests are to come and this section will be updated as I test them.
+Currently this has only been tested on Node.js `18.x.x`. More tests are to come and this section will be updated as I test them.
