@@ -1,3 +1,4 @@
+.github/
 src/
 dist/__test__/
 node_modules/
