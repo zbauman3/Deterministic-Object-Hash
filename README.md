@@ -42,7 +42,7 @@ import deterministicHash from 'deterministic-object-hash';
 const objA = { a: 'x', arr: [1,2,3,4], b: 'y' };
 const objB = { b: 'y', a: 'x', arr: [1,2,3,4] };
 
-deterministicHash({
+await deterministicHash({
 	c: [ objA, objB ],
 	b: objA,
 	e: objB,
@@ -52,7 +52,7 @@ deterministicHash({
 });
 // -> 4c57bcb76498dca7b98ef9747c8f1e7f10c30388
 
-deterministicHash({
+await deterministicHash({
 	h: new Error('AHHH'),
 	e: objB,
 	g: Symbol('Unique identity'),
@@ -110,3 +110,11 @@ Due to their nature, [WeakSet](https://developer.mozilla.org/en-US/docs/Web/Java
 
 ## Support
 Currently this has only been tested on Node.js `18.x.x`. More tests are to come and this section will be updated as I test them.
+
+## Contributors
+Contributions are welcome. Feel free to create a PR and tag [zbauman3](https://github.com/zbauman3).
+
+### Past contributors: 
+
+- [zbauman3](https://github.com/zbauman3)
+- [RodrigoTomeES](https://github.com/RodrigoTomeES)
