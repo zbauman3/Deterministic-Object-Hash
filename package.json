@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "npx jest",
+    "build": "npx tsc -b ./",
     "ts-watch": "npx tsc -b --watch ./"
   },
   "repository": {
