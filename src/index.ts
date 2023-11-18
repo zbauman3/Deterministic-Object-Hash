@@ -1,4 +1,4 @@
-import { BinaryToTextEncoding, webcrypto } from "crypto";
+import { BinaryToTextEncoding, webcrypto } from "node:crypto";
 import isPlainObject from "./isPlainObject";
 import { encoders } from "./encoders";
 
