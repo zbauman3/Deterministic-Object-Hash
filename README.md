@@ -1,5 +1,5 @@
 # Deterministic-Object-Hash
-A deterministic object hashing algorithm for Node.js.
+A deterministic object hashing algorithm for Node.js and web platform.
 
 ## The Problem
 Using `JSON.stringify` on two objects that are deeply equal does not lead to the same output string. Instead the keys are ordered in the same order that they were added. This leads to two objects that are deeply equal being hashed to different values.
